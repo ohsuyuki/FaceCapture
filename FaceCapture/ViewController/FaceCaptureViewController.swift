@@ -12,39 +12,32 @@ import AVFoundation
 class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
 
     @IBOutlet weak var imageViewCapture: UIImageView!
+    @IBOutlet weak var label: UILabel!
+
+    @IBAction func showFeature(_ sender: Any) {
+        if willCapture == true {
+            willCapture = false
+        } else {
+            willCapture = true
+            self.sessionInstance?.session.startRunning()
+        }
+    }
 
     private var sessionInstance: FactorySessionInstance? = nil
     private var imageViewBounds: CGRect!
     private var detectedFaceRect: [UIView] = []
+    private var willCapture: Bool = true
+
     override var prefersStatusBarHidden: Bool { return true } // 撮影中は画面上部のステイタスを非表示
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let result = FactorySession.create()
-        guard case Result<FactorySessionInstance, FactorySessionError>.success(let instance) = result else {
-            return
-        }
-        
-        sessionInstance = instance
-        instance.output.setSampleBufferDelegate(self, queue: DispatchQueue(label: "xgjwaifeyd"))
-        
-        // ouputの向きを縦向きに
-        for connection in sessionInstance!.output.connections {
-            guard connection.isVideoOrientationSupported == true else {
-                continue
-            }
-            connection.videoOrientation = .portrait
-        }
-
+        createSessionInstance()
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        guard let session = self.sessionInstance?.session else {
-            return
-        }
-        session.startRunning()
-
+        self.sessionInstance?.session.startRunning()
         imageViewBounds = CGRect(origin: imageViewCapture.bounds.origin, size: imageViewCapture.bounds.size)
     }
 
@@ -61,6 +54,33 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
             for face in detectedFaces {
                 drawOnImageView(face.rect)
             }
+
+            if willCapture == false {
+                if let detected = detectedFaces.first?.feature {
+                    showFeatureLabel(detected)
+                }
+                self.sessionInstance?.session.stopRunning()
+            } else {
+                label.text = ""
+            }
+        }
+    }
+
+    private func createSessionInstance() {
+        let result = FactorySession.create()
+        guard case Result<FactorySessionInstance, FactorySessionError>.success(let instance) = result else {
+            return
+        }
+        
+        sessionInstance = instance
+        instance.output.setSampleBufferDelegate(self, queue: DispatchQueue(label: "xgjwaifeyd"))
+        
+        // ouputの向きを縦向きに
+        for connection in sessionInstance!.output.connections {
+            guard connection.isVideoOrientationSupported == true else {
+                continue
+            }
+            connection.videoOrientation = .portrait
         }
     }
 
@@ -81,4 +101,41 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
         detectedFaceRect.removeAll()
     }
 
+    private func showFeatureLabel(_ faceFeature: CIFaceFeature) {
+        let faceFeatureDic = faceFeature.dictionary()
+        var featureStr = ""
+        for (key, value) in faceFeatureDic {
+            if featureStr.isEmpty == false {
+                featureStr += "\n"
+            }
+            featureStr += "\(key) : \(value)"
+        }
+        label.text = featureStr
+    }
+}
+
+extension CIFaceFeature {
+    
+    func dictionary() -> [String: Any] {
+        let dic: [String: Any] = [
+            "bounds": self.bounds,
+            "hasLeftEyePosition": self.hasLeftEyePosition,
+            "leftEyePosition": self.leftEyePosition,
+            "hasRightEyePosition": self.hasRightEyePosition,
+            "rightEyePosition": self.rightEyePosition,
+            "hasMouthPosition": self.hasMouthPosition,
+            "mouthPosition": self.mouthPosition,
+            "hasTrackingID": self.hasTrackingID,
+            "trackingID": self.trackingID,
+            "hasTrackingFrameCount": self.hasTrackingFrameCount,
+            "trackingFrameCount": self.hasTrackingFrameCount,
+            "hasFaceAngle": self.hasFaceAngle,
+            "faceAngle": self.faceAngle,
+            "hasSmile": self.hasSmile,
+            "leftEyeClosed": self.leftEyeClosed,
+            "rightEyeClosed": self.rightEyeClosed
+        ]
+        return dic
+    }
+    
 }
