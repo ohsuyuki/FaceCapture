@@ -102,13 +102,9 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
     }
 
     private func showFeatureLabel(_ faceFeature: CIFaceFeature) {
-        let faceFeatureDic = faceFeature.dictionary()
-        var featureStr = ""
-        for (key, value) in faceFeatureDic {
-            if featureStr.isEmpty == false {
-                featureStr += "\n"
-            }
-            featureStr += "\(key) : \(value)"
+        let faceFeatureArr = faceFeature.stringArray()
+        let featureStr = faceFeatureArr.reduce("") { con, v in
+            con + v + "\n"
         }
         label.text = featureStr
     }
@@ -137,5 +133,27 @@ extension CIFaceFeature {
         ]
         return dic
     }
-    
+
+    func stringArray() -> [String] {
+        return [
+            "bounds : \(self.bounds)",
+            "hasLeftEyePosition : \(self.hasLeftEyePosition)",
+            "leftEyePosition : \(self.leftEyePosition)",
+            "hasRightEyePosition : \(hasRightEyePosition)",
+            "rightEyePosition : \(rightEyePosition)",
+            "hasMouthPosition : \(hasMouthPosition)",
+            "mouthPosition : \(mouthPosition)",
+            "hasTrackingID : \(hasTrackingID)",
+            "trackingID : \(trackingID)",
+            "hasTrackingFrameCount : \(hasTrackingFrameCount)",
+            "trackingFrameCount : \(hasTrackingFrameCount)",
+            "hasFaceAngle : \(hasFaceAngle)",
+            "faceAngle : \(faceAngle)",
+            "hasSmile : \(hasSmile)",
+            "leftEyeClosed : \(leftEyeClosed)",
+            "rightEyeClosed : \(rightEyeClosed)"
+        ]
+        
+    }
+
 }
