@@ -32,13 +32,13 @@ class ImageProcessor {
             guard let face = face as? CIFaceFeature else {
                 continue
             }
-            
+
             let rect = face.bounds
             let x = rect.origin.x * ratioWidth
             let y = (image.size.height - rect.origin.y - rect.size.height) * ratioHeight
             let width = rect.width * ratioWidth
             let height = rect.height * ratioHeight
-            
+
             let faceStruct = Face(feature: face, rect: CGRect(x: x, y: y, width: width, height: height))
             detected.append(faceStruct)
         }
