@@ -8,12 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		1CFB2BD4203D07F7008C3C57 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB2BD3203D07F7008C3C57 /* AppDelegate.swift */; };
-		1CFB2BD6203D07F7008C3C57 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB2BD5203D07F7008C3C57 /* ViewController.swift */; };
-		1CFB2BD9203D07F7008C3C57 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1CFB2BD7203D07F7008C3C57 /* Main.storyboard */; };
 		1CFB2BDB203D07F7008C3C57 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1CFB2BDA203D07F7008C3C57 /* Assets.xcassets */; };
 		1CFB2BDE203D07F7008C3C57 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1CFB2BDC203D07F7008C3C57 /* LaunchScreen.storyboard */; };
 		1CFB2BE9203D07F7008C3C57 /* FaceCaptureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB2BE8203D07F7008C3C57 /* FaceCaptureTests.swift */; };
 		1CFB2BF4203D07F7008C3C57 /* FaceCaptureUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB2BF3203D07F7008C3C57 /* FaceCaptureUITests.swift */; };
+		1CFB2C04203D0858008C3C57 /* FaceCapture.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1CFB2C03203D0858008C3C57 /* FaceCapture.storyboard */; };
+		1CFB2C06203D0879008C3C57 /* FaceCaptureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB2C05203D0879008C3C57 /* FaceCaptureViewController.swift */; };
+		1CFB2C09203D0A59008C3C57 /* FactorySession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB2C08203D0A59008C3C57 /* FactorySession.swift */; };
+		1CFB2C0B203D0A8F008C3C57 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB2C0A203D0A8F008C3C57 /* Result.swift */; };
+		1CFB2C0D203D0B84008C3C57 /* ExtensionCMSampleBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB2C0C203D0B83008C3C57 /* ExtensionCMSampleBuffer.swift */; };
+		1CFB2C0F203D0BAD008C3C57 /* ImageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB2C0E203D0BAD008C3C57 /* ImageProcessor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,8 +40,6 @@
 /* Begin PBXFileReference section */
 		1CFB2BD0203D07F7008C3C57 /* FaceCapture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FaceCapture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CFB2BD3203D07F7008C3C57 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		1CFB2BD5203D07F7008C3C57 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		1CFB2BD8203D07F7008C3C57 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1CFB2BDA203D07F7008C3C57 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1CFB2BDD203D07F7008C3C57 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1CFB2BDF203D07F7008C3C57 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -47,6 +49,12 @@
 		1CFB2BEF203D07F7008C3C57 /* FaceCaptureUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FaceCaptureUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CFB2BF3203D07F7008C3C57 /* FaceCaptureUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceCaptureUITests.swift; sourceTree = "<group>"; };
 		1CFB2BF5203D07F7008C3C57 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1CFB2C03203D0858008C3C57 /* FaceCapture.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = FaceCapture.storyboard; sourceTree = "<group>"; };
+		1CFB2C05203D0879008C3C57 /* FaceCaptureViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceCaptureViewController.swift; sourceTree = "<group>"; };
+		1CFB2C08203D0A59008C3C57 /* FactorySession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FactorySession.swift; sourceTree = "<group>"; };
+		1CFB2C0A203D0A8F008C3C57 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
+		1CFB2C0C203D0B83008C3C57 /* ExtensionCMSampleBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtensionCMSampleBuffer.swift; sourceTree = "<group>"; };
+		1CFB2C0E203D0BAD008C3C57 /* ImageProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageProcessor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +105,7 @@
 		1CFB2BD2203D07F7008C3C57 /* FaceCapture */ = {
 			isa = PBXGroup;
 			children = (
+				1CFB2C07203D0A46008C3C57 /* Model */,
 				1CFB2C02203D0824008C3C57 /* View */,
 				1CFB2C01203D0812008C3C57 /* ViewController */,
 				1CFB2BD3203D07F7008C3C57 /* AppDelegate.swift */,
@@ -127,7 +136,7 @@
 		1CFB2C01203D0812008C3C57 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				1CFB2BD5203D07F7008C3C57 /* ViewController.swift */,
+				1CFB2C05203D0879008C3C57 /* FaceCaptureViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -135,10 +144,21 @@
 		1CFB2C02203D0824008C3C57 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				1CFB2BD7203D07F7008C3C57 /* Main.storyboard */,
 				1CFB2BDC203D07F7008C3C57 /* LaunchScreen.storyboard */,
+				1CFB2C03203D0858008C3C57 /* FaceCapture.storyboard */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		1CFB2C07203D0A46008C3C57 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				1CFB2C0A203D0A8F008C3C57 /* Result.swift */,
+				1CFB2C08203D0A59008C3C57 /* FactorySession.swift */,
+				1CFB2C0C203D0B83008C3C57 /* ExtensionCMSampleBuffer.swift */,
+				1CFB2C0E203D0BAD008C3C57 /* ImageProcessor.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -248,9 +268,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1CFB2C04203D0858008C3C57 /* FaceCapture.storyboard in Resources */,
 				1CFB2BDE203D07F7008C3C57 /* LaunchScreen.storyboard in Resources */,
 				1CFB2BDB203D07F7008C3C57 /* Assets.xcassets in Resources */,
-				1CFB2BD9203D07F7008C3C57 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -275,8 +295,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1CFB2BD6203D07F7008C3C57 /* ViewController.swift in Sources */,
+				1CFB2C0B203D0A8F008C3C57 /* Result.swift in Sources */,
 				1CFB2BD4203D07F7008C3C57 /* AppDelegate.swift in Sources */,
+				1CFB2C06203D0879008C3C57 /* FaceCaptureViewController.swift in Sources */,
+				1CFB2C0F203D0BAD008C3C57 /* ImageProcessor.swift in Sources */,
+				1CFB2C09203D0A59008C3C57 /* FactorySession.swift in Sources */,
+				1CFB2C0D203D0B84008C3C57 /* ExtensionCMSampleBuffer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,14 +336,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		1CFB2BD7203D07F7008C3C57 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				1CFB2BD8203D07F7008C3C57 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		1CFB2BDC203D07F7008C3C57 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
