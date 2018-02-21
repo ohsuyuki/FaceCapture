@@ -23,7 +23,7 @@ struct Face {
 
 class ImageProcessor {
 
-    static let detector = CIDetector(ofType: CIDetectorTypeFace, context: nil, options: [CIDetectorAccuracy: CIDetectorAccuracyHigh, CIDetectorTracking: true])
+    static let detector = CIDetector(ofType: CIDetectorTypeFace, context: nil, options: [CIDetectorAccuracy: CIDetectorAccuracyHigh])
     
     static func detectFaces(_ image: UIImage, ratioWidth: CGFloat, ratioHeight: CGFloat) -> [Face] {
         var detected: [Face] = []

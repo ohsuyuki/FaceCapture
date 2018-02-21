@@ -102,22 +102,17 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
         viewRect.layer.borderWidth = 2
         view.addSubview(viewRect)
 
-        let label = UILabel(frame: CGRect(x: 0, y: -24, width: viewRect.bounds.width, height: 24))
-        label.textColor = #colorLiteral(red: 1, green: 0.9490688443, blue: 0, alpha: 1)
-        label.numberOfLines = 1
-        label.textAlignment = .center
-        label.text = String("ID : \(face.feature.trackingID)")
-        viewRect.addSubview(label)
+        #if false
+            // mouth
+            let pointMouth = imageViewCapture.convert(face.mouth, to: view)
+            drawPoint(pointMouth, color: #colorLiteral(red: 1, green: 0, blue: 0.9713270068, alpha: 1))
 
-        // mouth
-        let pointMouth = imageViewCapture.convert(face.mouth, to: view)
-        drawPoint(pointMouth, color: #colorLiteral(red: 1, green: 0, blue: 0.9713270068, alpha: 1))
-
-        // eye
-        let pointRightEye = imageViewCapture.convert(face.rightEye, to: view)
-        drawPoint(pointRightEye, color: #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1))
-        let pointLeftEye = imageViewCapture.convert(face.leftEye, to: view)
-        drawPoint(pointLeftEye, color: #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1))
+            // eye
+            let pointRightEye = imageViewCapture.convert(face.rightEye, to: view)
+            drawPoint(pointRightEye, color: #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1))
+            let pointLeftEye = imageViewCapture.convert(face.leftEye, to: view)
+            drawPoint(pointLeftEye, color: #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1))
+        #endif
 
         detectedFaceRect.append(viewRect)
     }
