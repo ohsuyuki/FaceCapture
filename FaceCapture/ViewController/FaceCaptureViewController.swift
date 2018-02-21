@@ -52,7 +52,7 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
             imageViewCapture.image = image
             cleanRects()
             for face in detectedFaces {
-                drawOnImageView(face.rect)
+                drawOnImageView(face)
             }
 
             if willCapture == false {
@@ -94,6 +94,34 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
         detectedFaceRect.append(viewRect)
     }
 
+    private func drawOnImageView(_ face: Face) {
+        let point = imageViewCapture.convert(face.rect.origin, to: view)
+        let frame = CGRect(origin: point, size: CGSize(width: face.rect.width, height: face.rect.height))
+        let viewRect = UIView(frame: frame)
+        viewRect.layer.borderColor = #colorLiteral(red: 1, green: 0.9490688443, blue: 0, alpha: 1)
+        viewRect.layer.borderWidth = 2
+        view.addSubview(viewRect)
+
+        let label = UILabel(frame: CGRect(x: 0, y: -24, width: viewRect.bounds.width, height: 24))
+        label.textColor = #colorLiteral(red: 1, green: 0.9490688443, blue: 0, alpha: 1)
+        label.numberOfLines = 1
+        label.textAlignment = .center
+        label.text = String("ID : \(face.feature.trackingID)")
+        viewRect.addSubview(label)
+
+        // mouth
+        let pointMouth = imageViewCapture.convert(face.mouth, to: view)
+        drawPoint(pointMouth, color: #colorLiteral(red: 1, green: 0, blue: 0.9713270068, alpha: 1))
+
+        // eye
+        let pointRightEye = imageViewCapture.convert(face.rightEye, to: view)
+        drawPoint(pointRightEye, color: #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1))
+        let pointLeftEye = imageViewCapture.convert(face.leftEye, to: view)
+        drawPoint(pointLeftEye, color: #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1))
+
+        detectedFaceRect.append(viewRect)
+    }
+
     private func cleanRects() {
         for viewRect in detectedFaceRect {
             viewRect.removeFromSuperview()
@@ -107,6 +135,14 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
             con + v + "\n"
         }
         label.text = featureStr
+    }
+
+    private func drawPoint(_ point: CGPoint, color: CGColor) {
+        let frame = CGRect(origin: point, size: CGSize(width: 4, height: 4))
+        let uiView = UIView(frame: frame)
+        uiView.layer.borderColor = color
+        uiView.layer.borderWidth = 4
+        view.addSubview(uiView)
     }
 }
 
@@ -124,7 +160,7 @@ extension CIFaceFeature {
             "hasTrackingID": self.hasTrackingID,
             "trackingID": self.trackingID,
             "hasTrackingFrameCount": self.hasTrackingFrameCount,
-            "trackingFrameCount": self.hasTrackingFrameCount,
+            "trackingFrameCount": self.trackingFrameCount,
             "hasFaceAngle": self.hasFaceAngle,
             "faceAngle": self.faceAngle,
             "hasSmile": self.hasSmile,
@@ -136,9 +172,9 @@ extension CIFaceFeature {
 
     func stringArray() -> [String] {
         return [
-            "bounds : \(self.bounds)",
-            "hasLeftEyePosition : \(self.hasLeftEyePosition)",
-            "leftEyePosition : \(self.leftEyePosition)",
+            "bounds : \(bounds)",
+            "hasLeftEyePosition : \(hasLeftEyePosition)",
+            "leftEyePosition : \(leftEyePosition)",
             "hasRightEyePosition : \(hasRightEyePosition)",
             "rightEyePosition : \(rightEyePosition)",
             "hasMouthPosition : \(hasMouthPosition)",
@@ -146,14 +182,13 @@ extension CIFaceFeature {
             "hasTrackingID : \(hasTrackingID)",
             "trackingID : \(trackingID)",
             "hasTrackingFrameCount : \(hasTrackingFrameCount)",
-            "trackingFrameCount : \(hasTrackingFrameCount)",
+            "trackingFrameCount : \(trackingFrameCount)",
             "hasFaceAngle : \(hasFaceAngle)",
             "faceAngle : \(faceAngle)",
             "hasSmile : \(hasSmile)",
             "leftEyeClosed : \(leftEyeClosed)",
             "rightEyeClosed : \(rightEyeClosed)"
         ]
-        
     }
 
 }
