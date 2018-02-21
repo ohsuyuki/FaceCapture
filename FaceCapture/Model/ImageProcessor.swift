@@ -13,30 +13,38 @@ enum ErrorSearchFace {
     case unknown
 }
 
-class ImageProcessor {
+struct Face {
+    let feature: CIFaceFeature
+    let rect: CGRect
+}
 
-    static func detectFaces(_ image: UIImage, ratioWidth: CGFloat, ratioHeight: CGFloat) -> [CGRect] {
-        var rects: [CGRect] = []
+class ImageProcessor {
+    
+    static func detectFaces(_ image: UIImage, ratioWidth: CGFloat, ratioHeight: CGFloat) -> [Face] {
+        var detected: [Face] = []
         
         guard let detector = CIDetector(ofType: CIDetectorTypeFace, context: nil, options: [CIDetectorAccuracy: CIDetectorAccuracyHigh]), let imageAsCIImage = CIImage(image: image) else {
-            return rects
+            return detected
         }
         
         let faces = detector.features(in: imageAsCIImage) as NSArray
         for face in faces {
-            guard let rect = (face as AnyObject).bounds else {
+            guard let face = face as? CIFaceFeature else {
                 continue
             }
-
+            
+            let rect = face.bounds
             let x = rect.origin.x * ratioWidth
             let y = (image.size.height - rect.origin.y - rect.size.height) * ratioHeight
             let width = rect.width * ratioWidth
             let height = rect.height * ratioHeight
-
-            rects.append(CGRect(x: x, y: y, width: width, height: height))
+            
+            let faceStruct = Face(feature: face, rect: CGRect(x: x, y: y, width: width, height: height))
+            detected.append(faceStruct)
         }
-
-        return rects
+        
+        return detected
     }
-
+    
 }
+

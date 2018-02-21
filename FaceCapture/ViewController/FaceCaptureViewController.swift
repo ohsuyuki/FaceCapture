@@ -15,7 +15,7 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
 
     private var sessionInstance: FactorySessionInstance? = nil
     private var imageViewBounds: CGRect!
-
+    private var detectedFaceRect: [UIView] = []
     override var prefersStatusBarHidden: Bool { return true } // 撮影中は画面上部のステイタスを非表示
 
     override func viewDidLoad() {
@@ -53,11 +53,32 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
             return
         }
 
-        let rects = ImageProcessor.detectFaces(image, ratioWidth: imageViewBounds.width / image.size.width, ratioHeight: imageViewBounds.height / image.size.height)
+        let detectedFaces = ImageProcessor.detectFaces(image, ratioWidth: imageViewBounds.width / image.size.width, ratioHeight: imageViewBounds.height / image.size.height)
 
         DispatchQueue.main.sync {
             imageViewCapture.image = image
+            cleanRects()
+            for face in detectedFaces {
+                drawOnImageView(face.rect)
+            }
         }
+    }
+
+    private func drawOnImageView(_ rect: CGRect) {
+        let point = imageViewCapture.convert(rect.origin, to: view)
+        let frame = CGRect(origin: point, size: CGSize(width: rect.width, height: rect.height))
+        let viewRect = UIView(frame: frame)
+        viewRect.layer.borderColor = #colorLiteral(red: 1, green: 0.9490688443, blue: 0, alpha: 1)
+        viewRect.layer.borderWidth = 2
+        view.addSubview(viewRect)
+        detectedFaceRect.append(viewRect)
+    }
+
+    private func cleanRects() {
+        for viewRect in detectedFaceRect {
+            viewRect.removeFromSuperview()
+        }
+        detectedFaceRect.removeAll()
     }
 
 }
