@@ -97,11 +97,10 @@
 		1CFB2BD2203D07F7008C3C57 /* FaceCapture */ = {
 			isa = PBXGroup;
 			children = (
+				1CFB2C02203D0824008C3C57 /* View */,
+				1CFB2C01203D0812008C3C57 /* ViewController */,
 				1CFB2BD3203D07F7008C3C57 /* AppDelegate.swift */,
-				1CFB2BD5203D07F7008C3C57 /* ViewController.swift */,
-				1CFB2BD7203D07F7008C3C57 /* Main.storyboard */,
 				1CFB2BDA203D07F7008C3C57 /* Assets.xcassets */,
-				1CFB2BDC203D07F7008C3C57 /* LaunchScreen.storyboard */,
 				1CFB2BDF203D07F7008C3C57 /* Info.plist */,
 			);
 			path = FaceCapture;
@@ -123,6 +122,23 @@
 				1CFB2BF5203D07F7008C3C57 /* Info.plist */,
 			);
 			path = FaceCaptureUITests;
+			sourceTree = "<group>";
+		};
+		1CFB2C01203D0812008C3C57 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				1CFB2BD5203D07F7008C3C57 /* ViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		1CFB2C02203D0824008C3C57 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				1CFB2BD7203D07F7008C3C57 /* Main.storyboard */,
+				1CFB2BDC203D07F7008C3C57 /* LaunchScreen.storyboard */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
