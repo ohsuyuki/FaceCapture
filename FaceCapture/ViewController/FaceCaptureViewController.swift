@@ -276,6 +276,7 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
             self.storeImage.set(nil)
         }
     }
+
 }
 
 extension CIFaceFeature {
