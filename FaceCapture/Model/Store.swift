@@ -10,8 +10,12 @@ import Foundation
 
 class Store<T> {
 
-    private let queue = DispatchQueue(label: "store")
+    private let queue: DispatchQueue
     private var store: T? = nil
+
+    init(label: String) {
+        queue = DispatchQueue(label: label)
+    }
 
     func set(_ item: T?) {
         queue.sync {

@@ -115,25 +115,29 @@ class FaceCaptureSet {
 class FaceCaptureController {
 
     var capturedFaceSets: [FaceCaptureSet?] = Array(repeating: nil, count: FaceCaptureDirection.front.rawValue + 1)
-    var regularPosition: CGPoint? = nil
-
-    var targetDirections: [FaceCaptureDirection] = [.up, .rightUp, .right, .rightDown, .down, .leftDown, .left, .leftUp]
+    var isCapturedFaceSetsFull: Bool {
+        for captured in capturedFaceSets {
+            guard captured != nil else {
+                return false
+            }
+        }
+        return true
+    }
 
     // 検出された顔を検証して、登録可能な品質で撮影されていた保持
     func capture(_ faceSet: FaceCaptureSet) -> FaceCaptureDirection? {
         var faceCaptureDirection: FaceCaptureDirection? = nil
 
-        if let faceSetFront = capturedFaceSets[FaceCaptureDirection.front.rawValue] {
+        if let _ = capturedFaceSets[FaceCaptureDirection.front.rawValue] {
             // frontの顔画像が撮影済みなら、その他の角度の顔画像を取得
-            for target in targetDirections {
-                guard capturedFaceSets[target.rawValue] == nil else {
+            for target in 0..<FaceCaptureDirection.front.rawValue {
+                guard capturedFaceSets[target] == nil else {
                     continue
                 }
                 
-                if target.isEligible(faceSet) == true {
-                    faceCaptureDirection = target
-                    capturedFaceSets[target.rawValue] = faceSet
-                    break
+                if FaceCaptureDirection(rawValue :target)!.isEligible(faceSet) == true {
+                    faceCaptureDirection = FaceCaptureDirection(rawValue: target)
+                    capturedFaceSets[target] = faceSet
                 }
             }
         } else {
@@ -156,7 +160,8 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
     private var imageViewBounds: CGRect!
     private let faceCaptureController: FaceCaptureController = FaceCaptureController()
     private var guideLayers: [CAShapeLayer] = []
-    private let storeImage = Store<UIImage>()
+    private let storeImage = Store<UIImage>(label: "imageStore")
+    private let willCapture = Store<Bool>(label: "willCapture")
     private let queueImageProcess = DispatchQueue(label: "imageProcess")
 
     override var prefersStatusBarHidden: Bool { return true } // 撮影中は画面上部のステイタスを非表示
@@ -176,6 +181,15 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
 
     // 撮影された画像ごとに、顔の有無と品質を確認して、画面に映す
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        if willCapture.get() == false {
+            // 終了処理
+            self.sessionInstance?.session.stopRunning()
+//            DispatchQueue.main.async {
+//
+//            }
+            return
+        }
+
         guard let image = sampleBuffer.toImage() else {
             return
         }
@@ -273,6 +287,9 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
 
         DispatchQueue.main.async {
             self.guideLayers[directionCaptured.rawValue].strokeColor = #colorLiteral(red: 1, green: 0.9490688443, blue: 0, alpha: 1)
+            if self.faceCaptureController.isCapturedFaceSetsFull == true {
+                self.willCapture.set(false)
+            }
             self.storeImage.set(nil)
         }
     }
