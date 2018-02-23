@@ -190,7 +190,7 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
             return
         }
 
-        guard let image = sampleBuffer.toImage() else {
+        guard let image = sampleBuffer.toImage(mirrored: true) else {
             return
         }
 

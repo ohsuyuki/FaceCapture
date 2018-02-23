@@ -12,7 +12,7 @@ import UIKit
 
 extension CMSampleBuffer {
 
-    func toImage() -> UIImage? {
+    func toImage(mirrored: Bool) -> UIImage? {
         guard let imageBuffer: CVImageBuffer = CMSampleBufferGetImageBuffer(self) else {
             return nil
         }
@@ -35,8 +35,12 @@ extension CMSampleBuffer {
         guard let cgImage = newContext.makeImage() else {
             return nil
         }
-        
-        return UIImage(cgImage: cgImage)
+
+        if mirrored == true {
+            return UIImage(cgImage: cgImage, scale: 1.0, orientation: .upMirrored)
+        } else {
+            return UIImage(cgImage: cgImage)
+        }
     }
 
 }
