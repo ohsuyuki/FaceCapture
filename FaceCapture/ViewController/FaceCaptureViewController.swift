@@ -46,11 +46,7 @@ enum FaceCaptureDirection: Int {
     }
 
     func isEligible(_ face: FaceCaptureSet) -> Bool {
-        guard self == .front else {
-            return false
-        }
-
-        print(face.feature.bounds.area)
+        print("face area : \(face.feature.bounds.area)")
         // 顔の矩形の大きさ
         guard isEligible(rectArea: face.feature.bounds.area) == true else {
             return false
@@ -63,9 +59,17 @@ enum FaceCaptureDirection: Int {
             return false
         }
 
+        // 画像の中心から顔の中心点の角度
+        let angle = Geometria.calcAngle(face.feature.center, org: face.image.center)
+        print(angle)
+        guard isEligible(angle: angle) == true else {
+            return false
+        }
+
         return true
     }
 
+    #if false
     func isEligible(_ face: FaceCaptureSet, front: FaceCaptureSet) -> Bool {
         guard self != .front else {
             return false
@@ -93,7 +97,7 @@ enum FaceCaptureDirection: Int {
 
         return true
     }
-
+    #endif
 }
 
 class FaceCaptureSet {
@@ -126,7 +130,7 @@ class FaceCaptureController {
                     continue
                 }
                 
-                if target.isEligible(faceSet, front: faceSetFront) == true {
+                if target.isEligible(faceSet) == true {
                     faceCaptureDirection = target
                     capturedFaceSets[target.rawValue] = faceSet
                     break
@@ -151,7 +155,7 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
     private var sessionInstance: FactorySessionInstance? = nil
     private var imageViewBounds: CGRect!
     private let faceCaptureController: FaceCaptureController = FaceCaptureController()
-    private var guideLayer = CAShapeLayer()
+    private var guideLayers: [CAShapeLayer] = []
     private let storeImage = Store<UIImage>()
     private let queueImageProcess = DispatchQueue(label: "imageProcess")
 
@@ -191,7 +195,6 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
         queueImageProcess.async {
             self.detectFace()
         }
-
     }
 
     private func createSessionInstance() {
@@ -213,13 +216,13 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
     }
 
     private func drawGuide() {
-
         let radius = imageViewCapture.bounds.width * 0.6
         let center = imageViewCapture.bounds.center
 
-        let path = UIBezierPath()
-
         for i in 0...FaceCaptureDirection.front.rawValue {
+            let path = UIBezierPath()
+            let guideLayer = CAShapeLayer()
+
             if i == FaceCaptureDirection.front.rawValue {
                 // 正面に対応するガイドは外周園
                 path.move(to: center.move(dx: radius, dy: 0))
@@ -235,18 +238,15 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
                 path.addLine(to: destination)
                 path.stroke()
             }
+
+            guideLayer.lineWidth = 3
+            guideLayer.lineDashPattern = [ 10.0, 8.0 ]
+            guideLayer.strokeColor = UIColor.white.cgColor
+            guideLayer.path = path.cgPath
+
+            guideLayers.append(guideLayer)
+            imageViewCapture.layer.addSublayer(guideLayer)
         }
-
-        guideLayer.lineWidth = 3
-        guideLayer.lineDashPattern = [ 10.0, 8.0 ]
-        guideLayer.strokeColor = UIColor.white.cgColor
-        guideLayer.path = path.cgPath
-        
-        imageViewCapture.layer.addSublayer(guideLayer)
-    }
-
-    private func drawLine(_ direction: FaceCaptureDirection) {
-        
     }
 
     private func detectFace() {
@@ -271,21 +271,8 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
             return
         }
 
-        if directionCaptured == .front {
-            print("kita")
-        }
-
         DispatchQueue.main.async {
-            print("DispatchQueue.main.async (\(directionCaptured))")
-//            self.guideLayer.strokeColor = #colorLiteral(red: 1, green: 0.9490688443, blue: 0, alpha: 1)
-//            self.guideLayers[directionCaptured.rawValue].strokeColor = #colorLiteral(red: 1, green: 0.9490688443, blue: 0, alpha: 1)
-//            switch directionCaptured {
-//            case .front:
-//                print("self.guideLayer.borderColor = #colorLiteral(red: 1, green: 0.9490688443, blue: 0, alpha: 1)")
-//                self.guideLayers[].strokeColor = #colorLiteral(red: 1, green: 0.9490688443, blue: 0, alpha: 1)
-//            default:
-//                self.drawLine(directionCaptured)
-//            }
+            self.guideLayers[directionCaptured.rawValue].strokeColor = #colorLiteral(red: 1, green: 0.9490688443, blue: 0, alpha: 1)
             self.storeImage.set(nil)
         }
     }
