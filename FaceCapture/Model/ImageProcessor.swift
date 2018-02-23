@@ -64,7 +64,8 @@ extension CGPoint {
         return CGPoint(x: self.x * rx, y: self.y * ry)
     }
 
-    func convert(org: CGPoint) -> CGPoint {
-        return CGPoint(x: self.x - org.x, y: self.y - org.y)
+    func move(dx: CGFloat, dy: CGFloat) -> CGPoint {
+        return CGPoint(x: self.x + dx, y: self.y + dy)
     }
+
 }

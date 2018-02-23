@@ -49,10 +49,15 @@ class Geometria {
     }
 
     public static func calcAngle(_ point: CGPoint, org: CGPoint) -> CGFloat {
-        var r = atan2(point.y - org.y, point.x - org.x)
-        if r < 0 {
-            r = r + 2 * .pi
+        var radian = atan2(point.y - org.y, point.x - org.x)
+        if radian < 0 {
+            radian = radian + 2 * .pi
         }
-        return floor(r * 360 / (2 * .pi))
+        return radian
     }
+
+    public static func calcPoint(angle: CGFloat, distance: CGFloat) -> CGPoint {
+        return CGPoint(x: distance * cos(angle), y: distance * sin(angle))
+    }
+    
 }

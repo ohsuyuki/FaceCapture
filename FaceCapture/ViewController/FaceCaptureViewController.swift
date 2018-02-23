@@ -9,65 +9,56 @@
 import UIKit
 import AVFoundation
 
-enum CaptureFaceDirection: Int {
+enum FaceCaptureDirection: Int {
 
-    case front = 0
-    case up
+    case right = 0
     case rightUp
-    case right
-    case rightDown
-    case down
-    case leftDown
-    case left
+    case up
     case leftUp
+    case left
+    case leftDown
+    case down
+    case rightDown
+    case front // count
 
-    case count  // last
-
-    func isEligible(rectArea: CGFloat) -> Bool {
-        return (0.0...40.0).contains(rectArea)
+    static var eligibleRectArea: ClosedRange<CGFloat> = (100.0...CGFloat.greatestFiniteMagnitude)
+    private func isEligible(rectArea: CGFloat) -> Bool {
+        return FaceCaptureDirection.eligibleRectArea.contains(rectArea)
     }
 
-    func isEligible(distance: CGFloat) -> Bool {
-        return (10000.0...CGFloat.greatestFiniteMagnitude).contains(distance)
+    static var eligibleDistance: ClosedRange<CGFloat> = (0.0...200.0)
+    private func isEligible(distance: CGFloat) -> Bool {
+        return FaceCaptureDirection.eligibleDistance.contains(distance)
     }
 
+    static let angleDiff: CGFloat = (2.0 * CGFloat.pi) / CGFloat(FaceCaptureDirection.front.rawValue)
+    var eligibleAngle: CGFloat { return FaceCaptureDirection.angleDiff * CGFloat(self.rawValue) }
     func isEligible(angle: CGFloat) -> Bool {
+        let angleDiffHalf = FaceCaptureDirection.angleDiff / CGFloat(2.0)
         switch self {
         case .front:
             return true
-        case .up:
-            return 67.5 <= angle && angle < 112.5
-        case .leftUp:
-            return 112.5 <= angle && angle < 157.5
-        case .left:
-            return 157.5 <= angle && angle < 202.5
-        case .leftDown:
-            return 202.5 <= angle && angle < 247.5
-        case .down:
-            return 247.5 <= angle && angle < 292.5
-        case .rightDown:
-            return 292.5 <= angle && angle < 337.5
         case .right:
-            return (337.5 <= angle && angle < 360) || (0 <= angle && angle < 22.5)
-        case .rightUp:
-            return 22.5 <= angle && angle < 67.5
+            return (((2.0 * CGFloat.pi) - eligibleAngle) <= angle && angle < 0) || (0 <= angle && angle < (eligibleAngle + angleDiffHalf))
         default:
-            return false
+            return (eligibleAngle - angleDiffHalf) <= angle && angle < (eligibleAngle + angleDiffHalf)
         }
     }
 
-    func isEligible(_ face: CaptureFaceSet) -> Bool {
+    func isEligible(_ face: FaceCaptureSet) -> Bool {
         guard self == .front else {
             return false
         }
 
+        print(face.feature.bounds.area)
         // 顔の矩形の大きさ
-        guard isEligible(rectArea: face.rectArea) == true else {
+        guard isEligible(rectArea: face.feature.bounds.area) == true else {
             return false
         }
         
         // 顔の中心と画像の中心の距離
-        let distance = Geometria.calcDistance(face.center, org: face.centerImage)
+        let distance = Geometria.calcDistance(face.feature.center, org: face.image.center)
+        print("distance : \(distance), feature.center : \(face.feature.center), image.center : \(face.image.center)")
         guard isEligible(distance: distance) == true else {
             return false
         }
@@ -75,24 +66,27 @@ enum CaptureFaceDirection: Int {
         return true
     }
 
-    func isEligible(_ face: CaptureFaceSet, front: CaptureFaceSet) -> Bool {
+    func isEligible(_ face: FaceCaptureSet, front: FaceCaptureSet) -> Bool {
         guard self != .front else {
             return false
         }
 
+        print(face.feature.bounds.area)
         // 顔の矩形の大きさ
-        guard isEligible(rectArea: face.rectArea) == true else {
+        guard isEligible(rectArea: face.feature.bounds.area) == true else {
             return false
         }
 
         // 顔の中心と正面の顔の中心の距離
-        let distance = Geometria.calcDistance(face.center, org: front.center)
+        let distance = Geometria.calcDistance(face.feature.center, org: front.feature.center)
+        print(distance)
         guard isEligible(distance: distance) == true else {
             return false
         }
 
         // 正面の顔を原点としてときの顔の中心点の角度
-        let angle = Geometria.calcAngle(face.center, org: front.center)
+        let angle = Geometria.calcAngle(face.feature.center, org: front.feature.center)
+        print(angle)
         guard isEligible(angle: angle) == true else {
             return false
         }
@@ -102,34 +96,30 @@ enum CaptureFaceDirection: Int {
 
 }
 
-class CaptureFaceSet {
+class FaceCaptureSet {
 
     let feature: CIFaceFeature
     let image: UIImage
-
-    var center: CGPoint { return Geometria.calcCircle(a: feature.rightEyePosition, b: feature.leftEyePosition, c: feature.mouthPosition).center }
-    var triangleArea: CGFloat { return Geometria.calcAreaTriangle(a: feature.rightEyePosition, b: feature.leftEyePosition, c: feature.mouthPosition) }
-    var centerImage: CGPoint { return CGPoint(x: image.size.width / 2, y: image.size.height / 2) }
-    var rectArea: CGFloat { return feature.bounds.width * feature.bounds.height }
 
     init(feature: CIFaceFeature, image: UIImage) {
         self.feature = feature
         self.image = image
     }
+
 }
 
 class FaceCaptureController {
 
-    var capturedFaceSets: [CaptureFaceSet?] = Array(repeating: nil, count: CaptureFaceDirection.count.rawValue)
+    var capturedFaceSets: [FaceCaptureSet?] = Array(repeating: nil, count: FaceCaptureDirection.front.rawValue + 1)
     var regularPosition: CGPoint? = nil
 
-    var targetDirections: [CaptureFaceDirection] = [.up, .rightUp, .right, .rightDown, .down, .leftDown, .left, .leftUp]
+    var targetDirections: [FaceCaptureDirection] = [.up, .rightUp, .right, .rightDown, .down, .leftDown, .left, .leftUp]
 
     // 検出された顔を検証して、登録可能な品質で撮影されていた保持
-    func capture(_ faceSet: CaptureFaceSet) -> CaptureFaceDirection? {
-        var captureFaceDirection: CaptureFaceDirection? = nil
+    func capture(_ faceSet: FaceCaptureSet) -> FaceCaptureDirection? {
+        var faceCaptureDirection: FaceCaptureDirection? = nil
 
-        if let faceSetFront = capturedFaceSets[CaptureFaceDirection.front.rawValue] {
+        if let faceSetFront = capturedFaceSets[FaceCaptureDirection.front.rawValue] {
             // frontの顔画像が撮影済みなら、その他の角度の顔画像を取得
             for target in targetDirections {
                 guard capturedFaceSets[target.rawValue] == nil else {
@@ -137,19 +127,19 @@ class FaceCaptureController {
                 }
                 
                 if target.isEligible(faceSet, front: faceSetFront) == true {
-                    captureFaceDirection = target
+                    faceCaptureDirection = target
                     capturedFaceSets[target.rawValue] = faceSet
                     break
                 }
             }
         } else {
             // frontの顔画像が未撮影なら、frontの顔画像を取得
-            if CaptureFaceDirection.front.isEligible(faceSet) == true {
-                captureFaceDirection = .front
-                capturedFaceSets[CaptureFaceDirection.front.rawValue] = faceSet
+            if FaceCaptureDirection.front.isEligible(faceSet) == true {
+                faceCaptureDirection = .front
+                capturedFaceSets[FaceCaptureDirection.front.rawValue] = faceSet
             }
         }
-        return captureFaceDirection
+        return faceCaptureDirection
     }
 
 }
@@ -157,22 +147,13 @@ class FaceCaptureController {
 class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
 
     @IBOutlet weak var imageViewCapture: UIImageView!
-    @IBOutlet weak var label: UILabel!
-
-    @IBAction func showFeature(_ sender: Any) {
-        if willCapture == true {
-            willCapture = false
-        } else {
-            willCapture = true
-            self.sessionInstance?.session.startRunning()
-        }
-    }
 
     private var sessionInstance: FactorySessionInstance? = nil
     private var imageViewBounds: CGRect!
-    private var detectedFaceRect: [UIView] = []
-    private var willCapture: Bool = true
     private let faceCaptureController: FaceCaptureController = FaceCaptureController()
+    private var guideLayer = CAShapeLayer()
+    private let storeImage = Store<UIImage>()
+    private let queueImageProcess = DispatchQueue(label: "imageProcess")
 
     override var prefersStatusBarHidden: Bool { return true } // 撮影中は画面上部のステイタスを非表示
 
@@ -185,6 +166,8 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
     override func viewDidAppear(_ animated: Bool) {
         self.sessionInstance?.session.startRunning()
         imageViewBounds = CGRect(origin: imageViewCapture.bounds.origin, size: imageViewCapture.bounds.size)
+
+        drawGuide()
     }
 
     // 撮影された画像ごとに、顔の有無と品質を確認して、画面に映す
@@ -193,36 +176,22 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
             return
         }
 
-        // 顔を検出
-        let detectedFaces = ImageProcessor.detectFaces(image, ratioWidth: imageViewBounds.width / image.size.width, ratioHeight: imageViewBounds.height / image.size.height)
-
-        // 2人以上の顔が検出されたら、どちらも登録対象としない。どちらが登録候補か判断しづらいので。
-        var direction: CaptureFaceDirection? = nil
-        if detectedFaces.count == 1, let face = detectedFaces.first {
-            // 顔の確認
-            direction = faceCaptureController.capture(CaptureFaceSet(feature: face.feature, image: image))
-        }
-
         // 画面更新
-        DispatchQueue.main.sync {
-            imageViewCapture.image = image
-
-            #if false
-            cleanRects()
-            for face in detectedFaces {
-                drawOnImageView(face)
-            }
-            #endif
-
-            if willCapture == false {
-                if let detected = detectedFaces.first?.feature {
-                    showFeatureLabel(detected)
-                }
-                self.sessionInstance?.session.stopRunning()
-            } else {
-                label.text = ""
-            }
+        DispatchQueue.main.async {
+            self.imageViewCapture.image = image
         }
+
+        // 顔検出中の画像の有無を確認
+        guard storeImage.get() == nil else {
+            return
+        }
+        storeImage.set(image)
+
+        // 顔検出
+        queueImageProcess.async {
+            self.detectFace()
+        }
+
     }
 
     private func createSessionInstance() {
@@ -243,106 +212,101 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
         }
     }
 
-    private func drawOnImageView(_ rect: CGRect) {
-        let point = imageViewCapture.convert(rect.origin, to: view)
-        let frame = CGRect(origin: point, size: CGSize(width: rect.width, height: rect.height))
-        let viewRect = UIView(frame: frame)
-        viewRect.layer.borderColor = #colorLiteral(red: 1, green: 0.9490688443, blue: 0, alpha: 1)
-        viewRect.layer.borderWidth = 2
-        view.addSubview(viewRect)
-        detectedFaceRect.append(viewRect)
-    }
+    private func drawGuide() {
 
-    private func drawOnImageView(_ face: Face) {
-        let point = imageViewCapture.convert(face.rect.origin, to: view)
-        let frame = CGRect(origin: point, size: CGSize(width: face.rect.width, height: face.rect.height))
-        let viewRect = UIView(frame: frame)
-        viewRect.layer.borderColor = #colorLiteral(red: 1, green: 0.9490688443, blue: 0, alpha: 1)
-        viewRect.layer.borderWidth = 2
-        view.addSubview(viewRect)
+        let radius = imageViewCapture.bounds.width * 0.6
+        let center = imageViewCapture.bounds.center
 
-        #if false
-            // mouth
-            let pointMouth = imageViewCapture.convert(face.mouth, to: view)
-            drawPoint(pointMouth, color: #colorLiteral(red: 1, green: 0, blue: 0.9713270068, alpha: 1))
+        let path = UIBezierPath()
 
-            // eye
-            let pointRightEye = imageViewCapture.convert(face.rightEye, to: view)
-            drawPoint(pointRightEye, color: #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1))
-            let pointLeftEye = imageViewCapture.convert(face.leftEye, to: view)
-            drawPoint(pointLeftEye, color: #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1))
-        #endif
-
-        detectedFaceRect.append(viewRect)
-    }
-
-    private func cleanRects() {
-        for viewRect in detectedFaceRect {
-            viewRect.removeFromSuperview()
+        for i in 0...FaceCaptureDirection.front.rawValue {
+            if i == FaceCaptureDirection.front.rawValue {
+                // 正面に対応するガイドは外周園
+                path.move(to: center.move(dx: radius, dy: 0))
+                path.addArc(withCenter: center, radius: radius, startAngle: 0, endAngle: .pi * 2, clockwise: true)
+                path.close()
+                path.stroke()
+                guideLayer.fillColor = UIColor.clear.cgColor
+            } else {
+                // 顔の角度毎のガイド
+                let destinationRelational = Geometria.calcPoint(angle: FaceCaptureDirection(rawValue: i)!.eligibleAngle, distance: radius * 0.8)
+                let destination = destinationRelational.move(dx: center.x, dy: center.y)
+                path.move(to: center)
+                path.addLine(to: destination)
+                path.stroke()
+            }
         }
-        detectedFaceRect.removeAll()
+
+        guideLayer.lineWidth = 3
+        guideLayer.lineDashPattern = [ 10.0, 8.0 ]
+        guideLayer.strokeColor = UIColor.white.cgColor
+        guideLayer.path = path.cgPath
+        
+        imageViewCapture.layer.addSublayer(guideLayer)
     }
 
-    private func showFeatureLabel(_ faceFeature: CIFaceFeature) {
-        let faceFeatureArr = faceFeature.stringArray()
-        let featureStr = faceFeatureArr.reduce("") { con, v in
-            con + v + "\n"
+    private func drawLine(_ direction: FaceCaptureDirection) {
+        
+    }
+
+    private func detectFace() {
+        guard let image = storeImage.get() else {
+            return
         }
-        label.text = featureStr
-    }
 
-    private func drawPoint(_ point: CGPoint, color: CGColor) {
-        let frame = CGRect(origin: point, size: CGSize(width: 4, height: 4))
-        let uiView = UIView(frame: frame)
-        uiView.layer.borderColor = color
-        uiView.layer.borderWidth = 4
-        view.addSubview(uiView)
+        // 顔を検出
+        let detectedFaces = ImageProcessor.detectFaces(image, ratioWidth: imageViewBounds.width / image.size.width, ratioHeight: imageViewBounds.height / image.size.height)
+        
+        // 2人以上の顔が検出されたら、どちらも登録対象としない。どちらが登録候補か判断しづらいので。
+        var direction: FaceCaptureDirection? = nil
+        if detectedFaces.count == 1, let face = detectedFaces.first {
+            // 顔の確認
+            direction = faceCaptureController.capture(FaceCaptureSet(feature: face.feature, image: image))
+        }
+
+        print("direction : \(direction)")
+
+        guard let directionCaptured = direction else {
+            self.storeImage.set(nil)
+            return
+        }
+
+        if directionCaptured == .front {
+            print("kita")
+        }
+
+        DispatchQueue.main.async {
+            print("DispatchQueue.main.async (\(directionCaptured))")
+//            self.guideLayer.strokeColor = #colorLiteral(red: 1, green: 0.9490688443, blue: 0, alpha: 1)
+//            self.guideLayers[directionCaptured.rawValue].strokeColor = #colorLiteral(red: 1, green: 0.9490688443, blue: 0, alpha: 1)
+//            switch directionCaptured {
+//            case .front:
+//                print("self.guideLayer.borderColor = #colorLiteral(red: 1, green: 0.9490688443, blue: 0, alpha: 1)")
+//                self.guideLayers[].strokeColor = #colorLiteral(red: 1, green: 0.9490688443, blue: 0, alpha: 1)
+//            default:
+//                self.drawLine(directionCaptured)
+//            }
+            self.storeImage.set(nil)
+        }
     }
 }
 
 extension CIFaceFeature {
-    
-    func dictionary() -> [String: Any] {
-        let dic: [String: Any] = [
-            "bounds": self.bounds,
-            "hasLeftEyePosition": self.hasLeftEyePosition,
-            "leftEyePosition": self.leftEyePosition,
-            "hasRightEyePosition": self.hasRightEyePosition,
-            "rightEyePosition": self.rightEyePosition,
-            "hasMouthPosition": self.hasMouthPosition,
-            "mouthPosition": self.mouthPosition,
-            "hasTrackingID": self.hasTrackingID,
-            "trackingID": self.trackingID,
-            "hasTrackingFrameCount": self.hasTrackingFrameCount,
-            "trackingFrameCount": self.trackingFrameCount,
-            "hasFaceAngle": self.hasFaceAngle,
-            "faceAngle": self.faceAngle,
-            "hasSmile": self.hasSmile,
-            "leftEyeClosed": self.leftEyeClosed,
-            "rightEyeClosed": self.rightEyeClosed
-        ]
-        return dic
-    }
 
-    func stringArray() -> [String] {
-        return [
-            "bounds : \(bounds)",
-            "hasLeftEyePosition : \(hasLeftEyePosition)",
-            "leftEyePosition : \(leftEyePosition)",
-            "hasRightEyePosition : \(hasRightEyePosition)",
-            "rightEyePosition : \(rightEyePosition)",
-            "hasMouthPosition : \(hasMouthPosition)",
-            "mouthPosition : \(mouthPosition)",
-            "hasTrackingID : \(hasTrackingID)",
-            "trackingID : \(trackingID)",
-            "hasTrackingFrameCount : \(hasTrackingFrameCount)",
-            "trackingFrameCount : \(trackingFrameCount)",
-            "hasFaceAngle : \(hasFaceAngle)",
-            "faceAngle : \(faceAngle)",
-            "hasSmile : \(hasSmile)",
-            "leftEyeClosed : \(leftEyeClosed)",
-            "rightEyeClosed : \(rightEyeClosed)"
-        ]
-    }
+    var center: CGPoint { return Geometria.calcCircle(a: self.rightEyePosition, b: self.leftEyePosition, c: self.mouthPosition).center }
+    var triangleArea: CGFloat { return Geometria.calcAreaTriangle(a: self.rightEyePosition, b: self.leftEyePosition, c: self.mouthPosition) }
+
+}
+
+extension CGRect {
+
+    var area: CGFloat { return self.width * self.height }
+    var center: CGPoint { return CGPoint(x: self.origin.x + self.width / 2, y: self.origin.y + self.height / 2) }
+
+}
+
+extension UIImage {
+
+    var center: CGPoint { return CGPoint(x: self.size.width / 2, y: self.size.height / 2) }
 
 }
