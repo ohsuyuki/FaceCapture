@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C110171203E7D610094FF71 /* Geometria.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C110170203E7D610094FF71 /* Geometria.swift */; };
 		1CFB2BD4203D07F7008C3C57 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB2BD3203D07F7008C3C57 /* AppDelegate.swift */; };
 		1CFB2BDB203D07F7008C3C57 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1CFB2BDA203D07F7008C3C57 /* Assets.xcassets */; };
 		1CFB2BDE203D07F7008C3C57 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1CFB2BDC203D07F7008C3C57 /* LaunchScreen.storyboard */; };
@@ -38,6 +39,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1C110170203E7D610094FF71 /* Geometria.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometria.swift; sourceTree = "<group>"; };
 		1CFB2BD0203D07F7008C3C57 /* FaceCapture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FaceCapture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CFB2BD3203D07F7008C3C57 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1CFB2BDA203D07F7008C3C57 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -157,6 +159,7 @@
 				1CFB2C08203D0A59008C3C57 /* FactorySession.swift */,
 				1CFB2C0C203D0B83008C3C57 /* ExtensionCMSampleBuffer.swift */,
 				1CFB2C0E203D0BAD008C3C57 /* ImageProcessor.swift */,
+				1C110170203E7D610094FF71 /* Geometria.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -296,6 +299,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1CFB2C0B203D0A8F008C3C57 /* Result.swift in Sources */,
+				1C110171203E7D610094FF71 /* Geometria.swift in Sources */,
 				1CFB2BD4203D07F7008C3C57 /* AppDelegate.swift in Sources */,
 				1CFB2C06203D0879008C3C57 /* FaceCaptureViewController.swift in Sources */,
 				1CFB2C0F203D0BAD008C3C57 /* ImageProcessor.swift in Sources */,
