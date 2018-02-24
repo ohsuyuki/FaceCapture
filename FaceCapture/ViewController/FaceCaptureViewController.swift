@@ -46,25 +46,33 @@ enum FaceCaptureDirection: Int {
     }
 
     func isEligible(_ face: FaceCaptureSet) -> Bool {
-        print("face area : \(face.feature.bounds.area)")
+//        print("face area : \(face.feature.bounds.area)")
         // 顔の矩形の大きさ
         guard isEligible(rectArea: face.feature.bounds.area) == true else {
             return false
         }
         
+        // 座標変換、画像は画面左上が原点なので、左下を原点に
+        let faceCenter = CGPoint(x: face.feature.center.x, y: face.image.size.height - face.feature.center.y)
         // 顔の中心と画像の中心の距離
-        let distance = Geometria.calcDistance(face.feature.center, org: face.image.center)
-        print("distance : \(distance), feature.center : \(face.feature.center), image.center : \(face.image.center)")
+        let distance = Geometria.calcDistance(faceCenter, org: face.image.center)
+//        print("distance : \(distance), feature.center : \(face.feature.center), image.center : \(face.image.center)")
         guard isEligible(distance: distance) == true else {
             return false
         }
 
         // 画像の中心から顔の中心点の角度
-        let angle = Geometria.calcAngle(face.feature.center, org: face.image.center)
-        print(angle)
+        let angle = Geometria.calcAngle(faceCenter, org: face.image.center)
+//        print(angle)
         guard isEligible(angle: angle) == true else {
             return false
         }
+
+        print("")
+        print(self)
+        print("face area : \(face.feature.bounds.area)")
+        print("distance : \(distance), feature.center : \(face.feature.center), image.center : \(face.image.center)")
+        print("angle : \(angle)")
 
         return true
     }
@@ -289,8 +297,6 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
             // 顔の確認
             direction = faceCaptureController.capture(FaceCaptureSet(feature: face.feature, image: image))
         }
-
-        print("direction : \(direction)")
 
         guard let directionCaptured = direction else {
             self.storeImage.set(nil)
