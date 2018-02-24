@@ -179,14 +179,26 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
         drawGuide()
     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        switch segue.identifier {
+        case "uploadViewController"?:
+            guard let uploadViewController = segue.destination as? UploadViewController else {
+                break
+            }
+            uploadViewController.faceCaptureController = self.faceCaptureController
+        default:
+            break
+        }
+    }
+
     // 撮影された画像ごとに、顔の有無と品質を確認して、画面に映す
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         if willCapture.get() == false {
             // 終了処理
             self.sessionInstance?.session.stopRunning()
-//            DispatchQueue.main.async {
-//
-//            }
+            DispatchQueue.main.async {
+                self.performSegue(withIdentifier: "uploadViewController", sender: nil)
+            }
             return
         }
 

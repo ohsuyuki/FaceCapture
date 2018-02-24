@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1C110171203E7D610094FF71 /* Geometria.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C110170203E7D610094FF71 /* Geometria.swift */; };
+		1CC4699C20412482003C1436 /* UploadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC4699B20412482003C1436 /* UploadViewController.swift */; };
 		1CE3066320400B86005A6082 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE3066220400B86005A6082 /* Store.swift */; };
 		1CFB2BD4203D07F7008C3C57 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB2BD3203D07F7008C3C57 /* AppDelegate.swift */; };
 		1CFB2BDB203D07F7008C3C57 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1CFB2BDA203D07F7008C3C57 /* Assets.xcassets */; };
@@ -41,6 +42,7 @@
 
 /* Begin PBXFileReference section */
 		1C110170203E7D610094FF71 /* Geometria.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometria.swift; sourceTree = "<group>"; };
+		1CC4699B20412482003C1436 /* UploadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadViewController.swift; sourceTree = "<group>"; };
 		1CE3066220400B86005A6082 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		1CFB2BD0203D07F7008C3C57 /* FaceCapture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FaceCapture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CFB2BD3203D07F7008C3C57 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 			isa = PBXGroup;
 			children = (
 				1CFB2C05203D0879008C3C57 /* FaceCaptureViewController.swift */,
+				1CC4699B20412482003C1436 /* UploadViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -305,6 +308,7 @@
 				1C110171203E7D610094FF71 /* Geometria.swift in Sources */,
 				1CFB2BD4203D07F7008C3C57 /* AppDelegate.swift in Sources */,
 				1CE3066320400B86005A6082 /* Store.swift in Sources */,
+				1CC4699C20412482003C1436 /* UploadViewController.swift in Sources */,
 				1CFB2C06203D0879008C3C57 /* FaceCaptureViewController.swift in Sources */,
 				1CFB2C0F203D0BAD008C3C57 /* ImageProcessor.swift in Sources */,
 				1CFB2C09203D0A59008C3C57 /* FactorySession.swift in Sources */,
