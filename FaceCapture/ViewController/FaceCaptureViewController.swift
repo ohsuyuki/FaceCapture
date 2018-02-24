@@ -45,34 +45,39 @@ enum FaceCaptureDirection: Int {
         }
     }
 
+    // 注意：座標は左下が原点
     func isEligible(_ face: FaceCaptureSet) -> Bool {
 //        print("face area : \(face.feature.bounds.area)")
         // 顔の矩形の大きさ
         guard isEligible(rectArea: face.feature.bounds.area) == true else {
             return false
         }
-        
-        // 座標変換、画像は画面左上が原点なので、左下を原点に
-        let faceCenter = CGPoint(x: face.feature.center.x, y: face.image.size.height - face.feature.center.y)
+
         // 顔の中心と画像の中心の距離
-        let distance = Geometria.calcDistance(faceCenter, org: face.image.center)
+        let distance = Geometria.calcDistance(face.feature.center, org: face.image.center)
 //        print("distance : \(distance), feature.center : \(face.feature.center), image.center : \(face.image.center)")
         guard isEligible(distance: distance) == true else {
             return false
         }
 
         // 画像の中心から顔の中心点の角度
-        let angle = Geometria.calcAngle(faceCenter, org: face.image.center)
+        let angle = Geometria.calcAngle(face.feature.center, org: face.image.center)
 //        print(angle)
         guard isEligible(angle: angle) == true else {
             return false
         }
 
-        print("")
-        print(self)
-        print("face area : \(face.feature.bounds.area)")
-        print("distance : \(distance), feature.center : \(face.feature.center), image.center : \(face.image.center)")
-        print("angle : \(angle)")
+        #if DEBUG
+            print("")
+            print(self)
+            print("  face area : \(face.feature.bounds.area)")
+            print("  distance : \(distance)")
+            print("    feature.center : \(face.feature.center)")
+            print("      eye : \(face.feature.leftEyePosition), \(face.feature.rightEyePosition)")
+            print("      mouth : \(face.feature.mouthPosition)")
+            print("    image.center : \(face.image.center)")
+            print("  angle : \(angle / CGFloat.pi) * pi")
+        #endif
 
         return true
     }
@@ -267,7 +272,9 @@ class FaceCaptureViewController: UIViewController, AVCaptureVideoDataOutputSampl
             } else {
                 // 顔の角度毎のガイド
                 let destinationRelational = Geometria.calcPoint(angle: FaceCaptureDirection(rawValue: i)!.eligibleAngle, distance: radius * 0.8)
-                let destination = destinationRelational.move(dx: center.x, dy: center.y)
+                let destinationReverse = destinationRelational.move(dx: center.x, dy: center.y)
+                // 左下が原点の座標から右上が原点の座標に変換
+                let destination = CGPoint(x: destinationReverse.x, y: imageViewCapture.bounds.height - destinationReverse.y)
                 path.move(to: center)
                 path.addLine(to: destination)
                 path.stroke()

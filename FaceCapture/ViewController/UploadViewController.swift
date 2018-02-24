@@ -47,7 +47,7 @@ class UploadViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let cellSize:CGFloat = view.bounds.width/2 - 2
+        let cellSize:CGFloat = view.bounds.width/2 - 1
         return CGSize(width: cellSize, height: cellSize)
     }
 
