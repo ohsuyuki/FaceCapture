@@ -28,19 +28,33 @@ extension CMSampleBuffer {
         
         let bitsPerCompornent: UInt = 8
         let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue).union(CGBitmapInfo.byteOrder32Little)
-        guard let newContext: CGContext = CGContext(data: baseAddress, width: Int(width), height: Int(height), bitsPerComponent: Int(bitsPerCompornent), bytesPerRow: Int(bytesPerRow), space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: bitmapInfo.rawValue) else {
+        guard let newContext = CGContext(data: baseAddress, width: Int(width), height: Int(height), bitsPerComponent: Int(bitsPerCompornent), bytesPerRow: Int(bytesPerRow), space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: bitmapInfo.rawValue) else {
             return nil
         }
-        
+
         guard let cgImage = newContext.makeImage() else {
             return nil
         }
 
-        if mirrored == true {
-            return UIImage(cgImage: cgImage, scale: 1.0, orientation: .upMirrored)
-        } else {
+        if mirrored == false {
             return UIImage(cgImage: cgImage)
         }
+
+        guard let mirroredContext = CGContext(data: nil, width: Int(width), height: Int(height), bitsPerComponent: Int(bitsPerCompornent), bytesPerRow: Int(bytesPerRow), space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: bitmapInfo.rawValue) else {
+            return nil
+        }
+
+        var transform = CGAffineTransform.identity
+        transform = transform.translatedBy(x: CGFloat(width), y: 0.0)
+        transform = transform.scaledBy(x: -1, y: 1)
+        mirroredContext.concatenate(transform)
+        mirroredContext.draw(cgImage, in: CGRect(x: 0, y:0, width: Int(width), height: Int(height)))
+
+        guard let mirroredCgImage = mirroredContext.makeImage() else {
+            return nil
+        }
+        
+        return UIImage(cgImage: mirroredCgImage)
     }
 
 }
